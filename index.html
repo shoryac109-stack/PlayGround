@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#05060f">
+  <meta name="description" content="遊戯王ルムマ — a mobile-first, touch-controlled fan-made room match duel with optional tilt controls.">
+  <title>遊戯王 ルムマ — Room Match Duel</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb--gold"></span>
+    <span class="orb orb--cyan"></span>
+    <span class="orb orb--violet"></span>
+    <span class="grid-veil"></span>
+  </div>
+
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand-mini" aria-label="Rumuma">
+        <span class="brand-star">✦</span>
+        <span class="brand-word">ルムマ</span>
+        <span class="brand-sub">ROOM DUEL</span>
+      </div>
+      <button class="room-chip" id="roomChip" type="button" aria-label="Copy room code">
+        <span>ROOM</span><b id="roomChipCode">----</b>
+      </button>
+      <div class="top-actions">
+        <button class="icon-btn" id="tiltQuick" type="button" aria-label="Toggle tilt controls" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M3 8l2-2 2 2M21 16l-2 2-2-2"/><circle cx="12" cy="18.5" r=".8" class="fill"/></svg>
+        </button>
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Toggle sound" aria-pressed="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 8.5c1.6 1.8 1.6 5.2 0 7M19.5 6c3 3.3 3 8.7 0 12"/></svg>
+        </button>
+        <button class="icon-btn" id="menuBtn" type="button" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="table-wrap">
+      <section class="hud hud--opponent" id="oppHud" aria-label="Opponent status">
+        <div class="hud-avatar" id="oppAvatar">?</div>
+        <div class="hud-main">
+          <div class="hud-line">
+            <span class="hud-name" id="oppName">WAITING</span>
+            <span class="hud-tag" id="oppTag">ROOM MATCH</span>
+          </div>
+          <div class="lp-track">
+            <div class="lp-ghost" id="oppLpGhost"></div>
+            <div class="lp-fill" id="oppLpFill"></div>
+            <span class="lp-value" id="oppLpValue">8000</span>
+          </div>
+        </div>
+        <div class="hud-side">
+          <span class="hud-count" id="oppHandCount">0</span>
+          <span class="hud-count-label">HAND</span>
+        </div>
+      </section>
+
+      <div class="board-stage" id="boardStage">
+        <div class="board" id="board">
+          <div class="board-surface" aria-hidden="true"></div>
+          <div class="board-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="field" id="field">
+            <div class="zone-grid" data-owner="ai" data-row="spell" aria-label="Opponent spell and trap zones"></div>
+            <div class="zone-grid" data-owner="ai" data-row="monster" aria-label="Opponent monster zones"></div>
+            <div class="midline" aria-hidden="true">
+              <span class="midline-line"></span>
+              <span class="turn-sigil" id="turnSigil"><i></i></span>
+              <span class="midline-line"></span>
+            </div>
+            <div class="zone-grid" data-owner="player" data-row="spell" aria-label="Your spell and trap zones"></div>
+            <div class="zone-grid" data-owner="player" data-row="monster" aria-label="Your monster zones"></div>
+          </div>
+          <div class="piles">
+            <button class="pile pile--ai-deck" id="aiDeck" type="button" aria-label="Opponent deck"><span class="pile-back"></span><b>0</b></button>
+            <button class="pile pile--ai-grave" id="aiGrave" type="button" aria-label="Opponent graveyard"><span class="pile-icon">✧</span><b>0</b></button>
+            <button class="pile pile--player-deck" id="playerDeck" type="button" aria-label="Your deck"><span class="pile-back"></span><b>0</b></button>
+            <button class="pile pile--player-grave" id="playerGrave" type="button" aria-label="Your graveyard"><span class="pile-icon">✧</span><b>0</b></button>
+          </div>
+          <div class="board-hint" id="boardHint" aria-hidden="true">DRAG TO TILT</div>
+        </div>
+      </div>
+
+      <section class="hud hud--player" id="playerHud" aria-label="Your status">
+        <div class="hud-avatar hud-avatar--player" id="playerAvatar">YOU</div>
+        <div class="hud-main">
+          <div class="hud-line">
+            <span class="hud-name">DUELIST</span>
+            <span class="hud-tag" id="playerTag">TURN 1</span>
+          </div>
+          <div class="lp-track">
+            <div class="lp-ghost" id="playerLpGhost"></div>
+            <div class="lp-fill" id="playerLpFill"></div>
+            <span class="lp-value" id="playerLpValue">8000</span>
+          </div>
+        </div>
+        <div class="hud-side">
+          <span class="hud-count" id="playerHandCount">0</span>
+          <span class="hud-count-label">HAND</span>
+        </div>
+      </section>
+    </main>
+
+    <section class="hand-dock" aria-label="Your hand and actions">
+      <div class="selection" id="selection">
+        <span class="selection-dot"></span>
+        <span class="selection-text" id="selectionText">手札をタップしてカードを選択</span>
+      </div>
+      <div class="hand" id="hand"></div>
+      <div class="actions" id="actions"></div>
+    </section>
+  </div>
+
+  <div class="overlay overlay--lobby" id="lobby">
+    <div class="lobby-aura" aria-hidden="true"></div>
+    <div class="lobby-card">
+      <div class="lobby-floats" aria-hidden="true">
+        <span class="float-card float-card--a"></span>
+        <span class="float-card float-card--b"></span>
+        <span class="float-card float-card--c"></span>
+      </div>
+      <div class="logo">
+        <div class="logo-kicker">UNOFFICIAL FAN-MADE DUEL</div>
+        <h1>遊戯王 <span>ルムマ</span></h1>
+        <p>ROOM MATCH DUEL</p>
+      </div>
+
+      <div class="room-panel">
+        <div class="room-panel-head">
+          <span>ROOM CODE</span>
+          <button id="copyCode" type="button" class="mini-btn">COPY</button>
+        </div>
+        <div class="room-code-row">
+          <div class="room-code" id="lobbyCode">K7Q2</div>
+          <button id="rerollRoom" type="button" class="mini-btn mini-btn--round" aria-label="Reroll room">↻</button>
+        </div>
+        <div class="room-opponent">
+          <div class="avatar" id="lobbyAvatar">LR</div>
+          <div class="room-opponent-text">
+            <b id="lobbyOpponent">星詠みのルカ</b>
+            <span id="lobbyOpponentTag">READY · PLATINUM</span>
+          </div>
+          <span class="ready-dot"></span>
+        </div>
+      </div>
+
+      <div class="lobby-actions">
+        <button class="btn btn--primary" id="startBtn" type="button" aria-label="Start Game">
+          <span class="btn-en">START GAME</span>
+          <span class="btn-jp">デュエル開始</span>
+        </button>
+        <button class="btn btn--ghost" id="joinToggle" type="button">ルームコードで参加</button>
+      </div>
+
+      <form class="join-row" id="joinForm" hidden>
+        <input id="joinCode" inputmode="text" maxlength="6" placeholder="ENTER CODE" autocomplete="off" spellcheck="false" aria-label="Room code">
+        <button type="submit" class="btn btn--small">参加</button>
+      </form>
+
+      <div class="lobby-toggles">
+        <button id="lobbyTilt" type="button" class="toggle-chip" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M3 8l2-2 2 2M21 16l-2 2-2-2"/></svg>
+          <span>傾き操作 OFF</span>
+        </button>
+        <button id="lobbySound" type="button" class="toggle-chip" aria-pressed="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M17 8.5c1.6 1.8 1.6 5.2 0 7"/></svg>
+          <span>SOUND ON</span>
+        </button>
+      </div>
+
+      <p class="disclaimer">非公式ファンメイド・デュエル。Konami / 遊戯王とは関係ありません。</p>
+    </div>
+  </div>
+
+  <div class="overlay overlay--modal" id="settings" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle">SETTINGS</h2>
+        <button id="settingsClose" type="button" class="icon-btn" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="setting-row">
+        <div><b>サウンド</b><span>SYNTH SFX</span></div>
+        <button id="setSound" type="button" class="switch" role="switch" aria-checked="true"><i></i></button>
+      </div>
+      <div class="setting-row">
+        <div><b>傾き操作</b><span>ACCELEROMETER TILT</span></div>
+        <button id="setTilt" type="button" class="switch" role="switch" aria-checked="false"><i></i></button>
+      </div>
+      <div class="setting-row">
+        <div><b>振動</b><span>HAPTICS</span></div>
+        <button id="setHaptics" type="button" class="switch" role="switch" aria-checked="true"><i></i></button>
+      </div>
+      <div class="setting-row setting-row--stack">
+        <div><b>モーション設定</b><span id="motionStatus">傾き操作はオフです</span></div>
+        <button id="recalibrate" type="button" class="mini-btn">RECALIBRATE</button>
+      </div>
+      <div class="modal-actions">
+        <button id="surrenderBtn" type="button" class="btn btn--danger">降参 / SURRENDER</button>
+        <button id="backToLobbyBtn" type="button" class="btn btn--ghost">ロビーへ戻る</button>
+      </div>
+      <p class="modal-note">iOS では「傾き操作」をオンにした瞬間にモーションアクセスの許可を求めます。</p>
+    </div>
+  </div>
+
+  <div class="overlay overlay--result" id="result" hidden>
+    <div class="result-card">
+      <div class="result-kicker" id="resultKicker">DUEL COMPLETE</div>
+      <h2 id="resultTitle">VICTORY</h2>
+      <p id="resultSub">相手のライフポイントを0にしました。</p>
+      <div class="result-stats">
+        <div><span>TURNS</span><b id="resultTurns">0</b></div>
+        <div><span>YOUR LP</span><b id="resultLp">8000</b></div>
+        <div><span>ROOM</span><b id="resultRoom">----</b></div>
+      </div>
+      <div class="result-actions">
+        <button id="rematchBtn" type="button" class="btn btn--primary"><span class="btn-en">REMATCH</span><span class="btn-jp">再戦</span></button>
+        <button id="resultLobbyBtn" type="button" class="btn btn--ghost">ロビーへ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner" id="banner" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="damage-layer" id="damageLayer" aria-hidden="true"></div>
+
+  <script type="module" src="./js/ui.js"></script>
+</body>
+</html>
