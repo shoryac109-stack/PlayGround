@@ -1,0 +1,19 @@
+{
+  "name": "遊戯王盤 — Holographic Duel Field",
+  "short_name": "遊戯王盤",
+  "description": "スマートフォン・タブレット向けのホログラフィック・デュエルボード。タッチと傾きで操作。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#04060f",
+  "theme_color": "#050813",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
