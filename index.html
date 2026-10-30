@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#050810">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>遊戯王 ルムマ — DUEL ROOM</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+  <div class="ambient ambient--one" aria-hidden="true"></div>
+  <div class="ambient ambient--two" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <svg class="svg-sprite" aria-hidden="true">
+    <defs>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.2v13.6L19 12 8 5.2Z" fill="currentColor"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.7 5.3 8 12l6.7 6.7 1.4-1.4L10.8 12l5.3-5.3-1.4-1.4Z" fill="currentColor"/></symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5v5h4l5 4v-13l-5 4H4Zm13.2-2.1a6.4 6.4 0 0 1 0 9.2l1.4 1.4a8.4 8.4 0 0 0 0-12l-1.4 1.4Zm-2.8 2.8a2.7 2.7 0 0 1 0 3.6l1.4 1.4a4.7 4.7 0 0 0 0-6.4L14.4 10.2Z" fill="currentColor"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5v5h4l5 4v-13l-5 4H4Zm13.6.2 1.4 1.4-1.8 1.8 1.8 1.8-1.4 1.4-1.8-1.8-1.8 1.8-1.4-1.4 1.8-1.8-1.8-1.8 1.4-1.4 1.8 1.8 1.8-1.8Z" fill="currentColor"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><path d="M12 2.8a9.2 9.2 0 1 0 0 18.4 9.2 9.2 0 0 0 0-18.4Zm.2 14.9a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.9-6.1c-.8.6-1.1 1-1.1 1.9h-1.9c0-1.6.6-2.3 1.7-3.1.8-.6 1.1-.9 1.1-1.6 0-.8-.6-1.3-1.5-1.3-.9 0-1.6.5-1.9 1.4l-1.8-.7c.6-1.6 2-2.5 3.8-2.5 2 0 3.4 1.2 3.4 3 0 1.4-.7 2.1-1.8 2.9Z" fill="currentColor"/></symbol>
+      <symbol id="i-tilt" viewBox="0 0 24 24"><path d="M7 2.5h10a2.5 2.5 0 0 1 2.5 2.5v14a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 19V5A2.5 2.5 0 0 1 7 2.5Zm0 2A.5.5 0 0 0 6.5 5v14a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H7Zm3.1 11.8a1.9 1.9 0 1 1 0 3.8 1.9 1.9 0 0 1 0-3.8ZM5.9 7.2l-2.7 2.7 1.4 1.4L6 9.9v6.2H8V9.9l1.4 1.4 1.4-1.4-2.7-2.7a1.6 1.6 0 0 0-2.2 0Z" fill="currentColor"/></symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4V4Zm10 0h6v6h-2V6h-4V4ZM4 14h2v4h4v2H4v-6Zm14 0h2v6h-6v-2h4v-4Z" fill="currentColor"/></symbol>
+      <symbol id="i-swords" viewBox="0 0 24 24"><path d="m4.1 3.1 5.4 5.4-1.4 1.4-1.5-1.5-3.9 3.9-1.4-1.4 3.9-3.9-1.1-1.1V3.1Zm15.8 0v2.8l-1.1 1.1 3.9 3.9-1.4 1.4-3.9-3.9-1.5 1.5-1.4-1.4 5.4-5.4ZM6.5 15.5l2 2-3.1 3.1-2-2 3.1-3.1Zm11 0 3.1 3.1-2 2-3.1-3.1 2-2Z" fill="currentColor"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 20 6v5.6c0 5-3.2 8.8-8 10-4.8-1.2-8-5-8-10V6l8-3.5Zm0 2.2L6 7.3v4.3c0 3.8 2.3 6.9 6 8 3.7-1.1 6-4.2 6-8V7.3l-6-2.6Z" fill="currentColor"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 1.8 2.2 7.1 7.1 2.2-7.1 2.2-2.2 7.1-2.2-7.1L2.7 11l7.1-2.2L12 1.8Z" fill="currentColor"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z" fill="currentColor"/></symbol>
+      <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M12 18.6a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8Zm0-5.5c1.5 0 2.9.6 3.9 1.6l1.4-1.4a7.5 7.5 0 0 0-10.6 0l1.4 1.4c1-1 2.4-1.6 3.9-1.6Zm0-4.2c2.6 0 5 1 6.8 2.8l1.4-1.4a11.7 11.7 0 0 0-16.4 0l1.4 1.4a9.6 9.6 0 0 1 6.8-2.8Z" fill="currentColor"/></symbol>
+    </defs>
+  </svg>
+
+  <section id="menuScreen" class="screen screen--menu is-active" aria-label="Duel room menu">
+    <header class="topline">
+      <div class="brand-mini">
+        <span class="brand-mini__mark">YR</span>
+        <span class="brand-mini__text">DUEL ROOM<small>ROOM MATCH SYSTEM</small></span>
+      </div>
+      <div class="topline__tools">
+        <button class="icon-btn" id="soundBtn" type="button" aria-label="Sound" aria-pressed="true"><svg><use href="#i-sound"></use></svg></button>
+        <button class="icon-btn" id="helpBtn" type="button" aria-label="How to play"><svg><use href="#i-help"></use></svg></button>
+      </div>
+    </header>
+
+    <main class="menu-main">
+      <div class="menu-copy">
+        <p class="eyebrow"><span class="eyebrow__jp">遊戯王</span><span class="eyebrow__line"></span><span>ROOM MATCH</span></p>
+        <h1 class="logo" aria-label="Duel Room">
+          <span>DUEL</span>
+          <span class="logo__accent">ROOM</span>
+        </h1>
+        <div class="logo-jp"><span>ル</span><span>ム</span><span>マ</span></div>
+        <p class="tagline">指先ひとつで、運命を引き寄せろ。</p>
+        <p class="tagline-en">DRAW. SUMMON. DOMINATE.</p>
+      </div>
+
+      <div class="menu-visual" aria-hidden="true">
+        <div class="portal">
+          <span class="portal__ring portal__ring--one"></span>
+          <span class="portal__ring portal__ring--two"></span>
+          <span class="portal__ring portal__ring--three"></span>
+          <span class="portal__core"></span>
+          <div id="heroFan" class="hero-fan"></div>
+        </div>
+        <div class="room-ticket">
+          <div class="room-ticket__cell">
+            <span>ROOM CODE</span>
+            <strong id="roomCode">A7K-219</strong>
+          </div>
+          <div class="room-ticket__cell">
+            <span>FORMAT</span>
+            <strong>4000 LP</strong>
+          </div>
+          <div class="room-ticket__cell">
+            <span>OPPONENT</span>
+            <strong class="online"><i></i>ASTRA</strong>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="menu-footer">
+      <div class="duelists">
+        <div class="duelist-chip">
+          <span class="avatar avatar--you">YOU</span>
+          <span><strong>DUELIST</strong><small>TOUCH READY</small></span>
+        </div>
+        <span class="versus">VS</span>
+        <div class="duelist-chip">
+          <span class="avatar avatar--ai">A</span>
+          <span><strong>ASTRA</strong><small>CPU RIVAL</small></span>
+        </div>
+      </div>
+
+      <button id="playBtn" class="play-btn" type="button" aria-label="Play">
+        <span class="play-btn__icon"><svg><use href="#i-play"></use></svg></span>
+        <span class="play-btn__text"><strong>PLAY</strong><small>デュエル開始</small></span>
+        <span class="play-btn__shine"></span>
+      </button>
+
+      <div class="menu-actions">
+        <button id="tiltBtn" class="chip" type="button" aria-pressed="false">
+          <svg><use href="#i-tilt"></use></svg><span>傾き操作</span><em id="tiltState">OFF</em>
+        </button>
+        <button id="fullscreenBtn" class="chip" type="button">
+          <svg><use href="#i-expand"></use></svg><span>全画面</span>
+        </button>
+      </div>
+      <p class="microcopy">TOUCH TO DUEL <span>·</span> 傾き操作は任意 <span>·</span> iOSでは許可が必要です</p>
+    </footer>
+  </section>
+
+  <section id="gameScreen" class="screen screen--game" aria-label="Duel field" hidden>
+    <header class="game-top">
+      <button id="exitBtn" class="icon-btn icon-btn--small" type="button" aria-label="Leave duel"><svg><use href="#i-back"></use></svg></button>
+      <div class="room-chip"><span class="room-chip__dot"></span>ROOM <strong id="gameRoomCode">A7K-219</strong><svg class="room-chip__wifi"><use href="#i-wifi"></use></svg></div>
+      <div class="turn-chip" id="turnChip">
+        <strong id="turnLabel">YOUR TURN</strong>
+        <small id="phaseLabel">MAIN PHASE</small>
+      </div>
+      <div class="game-tools">
+        <button id="gameTiltBtn" class="icon-btn icon-btn--small" type="button" aria-label="Tilt controls" aria-pressed="false"><svg><use href="#i-tilt"></use></svg></button>
+        <button id="gameSoundBtn" class="icon-btn icon-btn--small" type="button" aria-label="Sound" aria-pressed="true"><svg><use href="#i-sound"></use></svg></button>
+      </div>
+    </header>
+
+    <div class="duelist-bar duelist-bar--ai">
+      <div class="duelist-bar__avatar avatar avatar--ai">A</div>
+      <div class="duelist-bar__main">
+        <div class="duelist-bar__name"><strong>ASTRA</strong><span>CPU</span><em id="aiHandCount">5</em></div>
+        <div class="lp-track"><span id="aiLpBar" class="lp-track__fill"></span><i class="lp-track__shine"></i></div>
+      </div>
+      <div class="duelist-bar__lp"><small>LP</small><strong id="aiLp">4000</strong></div>
+      <div class="pile-stats"><span>DECK <b id="aiDeckCount">20</b></span><span>GY <b id="aiGraveCount">0</b></span></div>
+    </div>
+
+    <div id="arenaWrap" class="arena-wrap">
+      <div id="arena" class="arena">
+        <div class="arena__vignette"></div>
+        <div class="arena__grid"></div>
+        <div class="field" id="field">
+          <div class="zone-row zone-row--spell" id="aiSpellRow"></div>
+          <div class="zone-row" id="aiMonsterRow"></div>
+          <div class="field-line"><span>DUEL FIELD</span><i></i></div>
+          <div class="zone-row" id="playerMonsterRow"></div>
+          <div class="zone-row zone-row--spell" id="playerSpellRow"></div>
+        </div>
+        <div class="side-pile side-pile--ai">
+          <span class="pile-card pile-card--back"></span>
+          <b id="aiDeckCountSide">20</b>
+        </div>
+        <div class="side-pile side-pile--you">
+          <span class="pile-card pile-card--back"></span>
+          <b id="playerDeckCountSide">20</b>
+        </div>
+        <div id="fxLayer" class="fx-layer"></div>
+      </div>
+    </div>
+
+    <div class="duelist-bar duelist-bar--you">
+      <div class="duelist-bar__avatar avatar avatar--you">YOU</div>
+      <div class="duelist-bar__main">
+        <div class="duelist-bar__name"><strong>DUELIST</strong><span>YOU</span></div>
+        <div class="lp-track"><span id="playerLpBar" class="lp-track__fill"></span><i class="lp-track__shine"></i></div>
+      </div>
+      <div class="duelist-bar__lp"><small>LP</small><strong id="playerLp">4000</strong></div>
+      <div class="pile-stats"><span>DECK <b id="playerDeckCount">20</b></span><span>GY <b id="playerGraveCount">0</b></span></div>
+    </div>
+
+    <div class="hand-wrap">
+      <div class="hand-head"><span>YOUR HAND <b id="handCount">5</b></span><span class="hand-hint" id="handHint">カードをタップして選択</span></div>
+      <div id="handCards" class="hand-cards"></div>
+    </div>
+
+    <div class="action-dock">
+      <div id="promptBox" class="prompt-box"><span class="prompt-box__orb"></span><span id="promptText">カードをタップして選択</span><button id="targetCancel" class="prompt-cancel" type="button" hidden>取消</button></div>
+      <button id="endTurnBtn" class="end-turn" type="button"><span>ターン終了</span><small>END TURN</small></button>
+    </div>
+  </section>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+  <aside id="cardSheet" class="card-sheet" aria-hidden="true" aria-label="Card details">
+    <button id="sheetClose" class="sheet-close" type="button" aria-label="Close"><svg><use href="#i-close"></use></svg></button>
+    <div id="sheetPreview" class="sheet-preview"></div>
+    <div class="sheet-info">
+      <div class="sheet-heading">
+        <span id="sheetType" class="pill">MONSTER</span>
+        <span id="sheetAttr" class="sheet-attr">LIGHT</span>
+      </div>
+      <h2 id="sheetName">星海竜ヴェガ</h2>
+      <p id="sheetEn" class="sheet-en">VEGA DRAGON</p>
+      <div id="sheetStats" class="sheet-stats"></div>
+      <p id="sheetEffect" class="sheet-effect"></p>
+      <div id="sheetActions" class="sheet-actions"></div>
+    </div>
+  </aside>
+
+  <div id="modalBackdrop" class="modal-backdrop" hidden>
+    <div id="helpModal" class="modal modal--help" hidden>
+      <button class="modal__close" type="button" data-close-modal aria-label="Close"><svg><use href="#i-close"></use></svg></button>
+      <p class="eyebrow eyebrow--modal">HOW TO DUEL</p>
+      <h2>ルムマの遊び方</h2>
+      <div class="help-grid">
+        <div class="help-item"><b>01</b><span>手札のカードをタップ。大きなカード画面から「召喚」「発動」「セット」を選びます。</span></div>
+        <div class="help-item"><b>02</b><span>光るゾーンをタップして配置。モンスターは1ターンに1体まで召喚できます。</span></div>
+        <div class="help-item"><b>03</b><span>自分のモンスターをタップして「攻撃」。相手モンスターかLPを狙います。</span></div>
+        <div class="help-item"><b>04</b><span>相手のLPを0にすれば勝利。罠カードは相手の攻撃時に自動発動します。</span></div>
+      </div>
+      <div class="help-note"><svg><use href="#i-tilt"></use></svg><span>傾き操作は任意です。iOSでは「傾き操作」ボタンを押したときにモーション許可をリクエストします。</span></div>
+    </div>
+
+    <div id="resultModal" class="modal modal--result" hidden>
+      <div id="resultSigil" class="result-sigil"><svg><use href="#i-spark"></use></svg></div>
+      <p id="resultKicker" class="eyebrow eyebrow--modal">DUEL COMPLETE</p>
+      <h2 id="resultTitle">VICTORY</h2>
+      <p id="resultSub" class="result-sub">相手のLPを0にしました。</p>
+      <div class="result-stats">
+        <div><span>ROOM</span><strong id="resultRoom">A7K-219</strong></div>
+        <div><span>TURNS</span><strong id="resultTurns">0</strong></div>
+        <div><span>LP LEFT</span><strong id="resultLp">4000</strong></div>
+      </div>
+      <div class="result-actions">
+        <button id="replayBtn" class="btn btn--primary" type="button">再戦する<small>REMATCH</small></button>
+        <button id="menuBtn" class="btn btn--ghost" type="button">ルームへ戻る<small>LOBBY</small></button>
+      </div>
+    </div>
+
+    <div id="exitModal" class="modal modal--confirm" hidden>
+      <p class="eyebrow eyebrow--modal">LEAVE DUEL</p>
+      <h2>デュエルを中断しますか？</h2>
+      <p class="result-sub">現在の進行状況は保存されません。</p>
+      <div class="result-actions">
+        <button id="exitConfirm" class="btn btn--primary" type="button">退出する<small>LEAVE</small></button>
+        <button id="exitCancel" class="btn btn--ghost" type="button">続ける<small>STAY</small></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastHost" class="toast-host" aria-live="polite"></div>
+  <div id="rotateHint" class="rotate-hint">端末を横向きにすると、より広いフィールドで遊べます</div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>
