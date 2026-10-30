@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#070a18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>遊戯王 ルムマ簡単最速 | DUEL ROOM</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23ffe9a8'/%3E%3Cstop offset='1' stop-color='%23c68a2b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='%23070a18'/%3E%3Cpath d='M50 14 82 34v32L50 86 18 66V34z' fill='none' stroke='url(%23g)' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='12' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app" data-screen="lobby">
+  <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+  <div class="ambient-vignette" aria-hidden="true"></div>
+  <div class="ambient-aurora" aria-hidden="true"></div>
+  <div class="global-toast" id="global-toast" role="status" aria-live="polite"></div>
+
+  <section class="screen lobby-screen is-active" id="lobby" aria-label="ロビー">
+    <header class="lobby-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><path d="M50 8 88 31v38L50 92 12 69V31z" fill="none" stroke="currentColor" stroke-width="4"/><path d="M50 22 74 37v26L50 78 26 63V37z" fill="none" stroke="currentColor" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="10" fill="currentColor"/></svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-jp">遊戯王</span>
+          <span class="brand-en">DUEL ROOM</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="howto-btn" aria-label="遊び方">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 18h.01M9.5 9a2.5 2.5 0 1 1 3.7 2.2c-.8.5-1.2 1-1.2 1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="lobby-main">
+      <div class="lobby-hero">
+        <div class="hero-kicker"><span class="pulse-dot"></span> QUICK ROOM MATCH</div>
+        <h1 class="hero-title">
+          <span class="title-line title-main">ルムマ</span>
+          <span class="title-line title-accent">簡単最速</span>
+        </h1>
+        <p class="hero-copy">3分で決着。指先ひとつで、魂のデュエル。<br class="pc-only">スマホを傾ければ、盤面があなたの視界になる。</p>
+        <div class="hero-cta-row">
+          <button class="cta-primary" id="quick-match" aria-label="Start">
+            <span class="cta-glow" aria-hidden="true"></span>
+            <span class="cta-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            </span>
+            <span class="cta-text">
+              <strong>最速ルムマ</strong>
+              <small>いますぐ対戦</small>
+            </span>
+          </button>
+          <button class="cta-secondary" id="code-match" aria-label="ルームコードで対戦">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10H7z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 10V4h6M20 14v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>ルームコード</span>
+          </button>
+        </div>
+        <div class="hero-meta">
+          <span><b>4,000</b> LP</span>
+          <span class="meta-sep"></span>
+          <span><b>3</b> モンスターゾーン</span>
+          <span class="meta-sep"></span>
+          <span><b>20</b> 枚デッキ</span>
+        </div>
+      </div>
+
+      <aside class="lobby-side">
+        <div class="panel rooms-panel">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">LIVE ROOMS</span>
+              <h2>募集中のルーム</h2>
+            </div>
+            <span class="live-badge"><span class="pulse-dot"></span>3</span>
+          </div>
+          <div class="room-list" id="room-list"></div>
+          <button class="text-btn" id="refresh-rooms">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            ルームを更新
+          </button>
+        </div>
+
+        <div class="panel deck-panel">
+          <div class="panel-head">
+            <div>
+              <span class="panel-kicker">YOUR DECK</span>
+              <h2>デッキ選択</h2>
+            </div>
+          </div>
+          <div class="deck-list" id="deck-list"></div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="lobby-footer">
+      <div class="option-row">
+        <button class="toggle-chip" id="tilt-toggle" aria-pressed="false">
+          <span class="toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 6h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 12h3m10 0h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="toggle-label">傾き操作<small>任意</small></span>
+          <span class="toggle-state">OFF</span>
+        </button>
+        <button class="toggle-chip" id="sound-toggle" aria-pressed="true">
+          <span class="toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <span class="toggle-label">サウンド<small>SE</small></span>
+          <span class="toggle-state">ON</span>
+        </button>
+      </div>
+      <p class="fan-note">FAN-MADE TRIBUTE · 非公式ファンプロジェクト</p>
+    </footer>
+  </section>
+
+  <section class="overlay matchmaking-overlay" id="matchmaking" aria-label="対戦相手を検索中" aria-hidden="true">
+    <div class="match-card">
+      <div class="radar" aria-hidden="true">
+        <div class="radar-ring r1"></div>
+        <div class="radar-ring r2"></div>
+        <div class="radar-ring r3"></div>
+        <div class="radar-sweep"></div>
+        <div class="radar-core"><span id="radar-code">RM-0000</span></div>
+      </div>
+      <span class="panel-kicker">SEARCHING FOR DUELIST</span>
+      <h2 id="match-title">対戦相手を探しています</h2>
+      <p class="match-sub" id="match-sub">最速マッチ · 4,000 LP · 先攻ランダム</p>
+      <div class="match-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <button class="ghost-btn" id="cancel-match">キャンセル</button>
+    </div>
+  </section>
+
+  <section class="overlay vs-overlay" id="vs-overlay" aria-label="対戦開始" aria-hidden="true">
+    <div class="vs-flash" aria-hidden="true"></div>
+    <div class="vs-row">
+      <div class="vs-fighter player">
+        <div class="vs-avatar" id="vs-player-avatar"></div>
+        <span class="vs-name">YOU</span>
+        <span class="vs-deck" id="vs-player-deck">紅蓮覇道</span>
+      </div>
+      <div class="vs-mark" aria-hidden="true">VS</div>
+      <div class="vs-fighter enemy">
+        <div class="vs-avatar" id="vs-enemy-avatar"></div>
+        <span class="vs-name" id="vs-enemy-name">DUELIST</span>
+        <span class="vs-deck" id="vs-enemy-deck">蒼海幻獣</span>
+      </div>
+    </div>
+    <div class="vs-tag">ROOM <span id="vs-room-code">RM-0000</span></div>
+  </section>
+
+  <section class="screen duel-screen" id="duel" aria-label="デュエル" aria-hidden="true">
+    <header class="duel-top">
+      <div class="opponent-chip">
+        <div class="avatar enemy" id="ai-avatar">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 18c4-6 20-6 24 0 4 6 2 20-4 24l-8 6-8-6c-6-4-8-18-4-24z" fill="currentColor" opacity=".9"/><path d="M26 30h4m4 0h4" stroke="#070a18" stroke-width="2.4" stroke-linecap="round"/><path d="M29 40c2 1 4 1 6 0" stroke="#070a18" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="chip-main">
+          <div class="chip-row">
+            <span class="chip-name" id="ai-name">紅蓮のK</span>
+            <span class="chip-rank" id="ai-rank">GOLD III</span>
+          </div>
+          <div class="lp-line">
+            <div class="lp-track"><div class="lp-fill ai" id="ai-lp-fill"></div></div>
+            <span class="lp-number" id="ai-lp">4000</span>
+          </div>
+        </div>
+        <div class="chip-counts">
+          <span class="count-badge" title="手札"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10 7h4" stroke="currentColor" stroke-width="1.7"/></svg><b id="ai-hand-count">5</b></span>
+          <span class="count-badge" title="デッキ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h11v13H5zM8 4h11v13" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><b id="ai-deck-count">15</b></span>
+        </div>
+      </div>
+      <div class="turn-core">
+        <div class="turn-pill" id="turn-pill"><span class="turn-dot"></span><b id="turn-label">YOUR TURN</b></div>
+        <span class="turn-sub" id="turn-sub">TURN 1 · MAIN PHASE</span>
+      </div>
+      <div class="duel-top-actions">
+        <span class="room-tag" id="room-tag">RM-0000</span>
+        <button class="icon-btn small" id="menu-btn" aria-label="メニュー">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="arena" id="arena">
+      <div class="board-plane">
+        <div class="board-grid" aria-hidden="true"></div>
+        <div class="board-emblem" aria-hidden="true">
+          <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".5"/><circle cx="100" cy="100" r="66" fill="none" stroke="currentColor" stroke-width=".7" opacity=".35"/><path d="M100 30 122 78l52 8-38 36 9 52-45-25-45 25 9-52-38-36 52-8z" fill="none" stroke="currentColor" stroke-width="1" opacity=".45"/><circle cx="100" cy="100" r="8" fill="currentColor" opacity=".5"/></svg>
+        </div>
+
+        <div class="opponent-hand" id="opponent-hand" aria-label="相手の手札"></div>
+
+        <div class="field-side opponent-side">
+          <div class="monster-row" id="ai-monster-row"></div>
+          <div class="spell-row" id="ai-spell-row"></div>
+        </div>
+
+        <div class="center-strip">
+          <div class="center-line"></div>
+          <div class="center-badge" id="center-badge">
+            <span id="center-turn">T1</span>
+            <small>DUEL</small>
+          </div>
+          <div class="center-line"></div>
+        </div>
+
+        <div class="field-side player-side">
+          <div class="spell-row" id="player-spell-row"></div>
+          <div class="monster-row" id="player-monster-row"></div>
+        </div>
+
+        <div class="player-hand-zone">
+          <div class="hand-hint" id="hand-hint">カードをタップして選択</div>
+          <div class="player-hand" id="player-hand" aria-label="あなたの手札"></div>
+        </div>
+      </div>
+
+      <div class="arena-rail rail-left" aria-hidden="true">
+        <span class="rail-kanji">最速デュエル</span>
+        <span class="rail-line"></span>
+        <span class="rail-code" id="rail-code">RM-0000</span>
+      </div>
+      <div class="arena-rail rail-right" aria-hidden="true">
+        <span class="rail-kanji">ルームマッチ</span>
+        <span class="rail-line"></span>
+        <span class="rail-turn" id="rail-turn">T1</span>
+      </div>
+      <div class="fx-layer" id="fx-layer" aria-hidden="true"></div>
+    </div>
+
+    <footer class="action-dock" id="action-dock">
+      <div class="dock-player">
+        <div class="avatar player" id="player-avatar">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8c10 0 17 8 17 18 0 8-4 13-8 16v10H23V42c-4-3-8-8-8-16C15 16 22 8 32 8z" fill="currentColor" opacity=".92"/><path d="M24 29h5m6 0h5" stroke="#070a18" stroke-width="2.6" stroke-linecap="round"/><path d="M28 38c2.5 1.5 5.5 1.5 8 0" stroke="#070a18" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="dock-player-main">
+          <div class="dock-player-row">
+            <span class="dock-name">YOU</span>
+            <span class="dock-lp" id="player-lp">4000</span>
+          </div>
+          <div class="lp-track"><div class="lp-fill player" id="player-lp-fill"></div></div>
+        </div>
+        <div class="chip-counts">
+          <span class="count-badge" title="手札"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="4" width="10" height="16" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M10 7h4" stroke="currentColor" stroke-width="1.7"/></svg><b id="player-hand-count">5</b></span>
+          <span class="count-badge" title="デッキ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h11v13H5zM8 4h11v13" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><b id="player-deck-count">15</b></span>
+        </div>
+      </div>
+      <div class="dock-inspect" id="dock-inspect">
+        <span class="inspect-empty" id="inspect-empty">カードを選択</span>
+        <div class="inspect-card" id="inspect-card" hidden>
+          <span class="inspect-type" id="inspect-type">MONSTER</span>
+          <span class="inspect-name" id="inspect-name">紅蓮の竜騎</span>
+          <span class="inspect-stats" id="inspect-stats">ATK 2400 / DEF 1800</span>
+        </div>
+      </div>
+      <div class="dock-actions" id="dock-actions">
+        <button class="dock-btn ghost" id="cancel-action" hidden>戻る</button>
+        <button class="dock-btn primary" id="end-turn">ターン終了</button>
+      </div>
+    </footer>
+
+    <div class="overlay menu-overlay" id="menu-overlay" aria-label="メニュー" aria-hidden="true">
+      <div class="menu-card">
+        <div class="menu-head">
+          <span class="panel-kicker">DUEL MENU</span>
+          <h2>ポーズ</h2>
+        </div>
+        <button class="menu-item" id="menu-tilt"><span>傾き操作</span><b>OFF</b></button>
+        <button class="menu-item" id="menu-sound"><span>サウンド</span><b>ON</b></button>
+        <button class="menu-item" id="menu-howto"><span>遊び方</span><b>?</b></button>
+        <button class="menu-item danger" id="menu-surrender"><span>降参する</span><b>×</b></button>
+        <button class="menu-item" id="menu-close"><span>デュエルに戻る</span><b>←</b></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay result-overlay" id="result" aria-label="デュエル結果" aria-hidden="true">
+    <div class="result-card">
+      <div class="result-emblem" id="result-emblem" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><path d="M60 6 108 34v52L60 114 12 86V34z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M60 24 92 43v34L60 96 28 77V43z" fill="none" stroke="currentColor" stroke-width="1" opacity=".6"/><circle cx="60" cy="60" r="16" fill="none" stroke="currentColor" stroke-width="2"/><path d="M52 60l6 6 12-14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="panel-kicker" id="result-kicker">DUEL COMPLETE</span>
+      <h2 id="result-title">勝利</h2>
+      <p id="result-copy">魂のデュエル、見事でした。</p>
+      <div class="result-stats">
+        <div><span>ターン</span><b id="result-turns">8</b></div>
+        <div><span>与ダメージ</span><b id="result-damage">4000</b></div>
+        <div><span>残りLP</span><b id="result-lp">1800</b></div>
+      </div>
+      <div class="result-actions">
+        <button class="cta-primary compact" id="rematch"><span class="cta-text"><strong>もう一度</strong><small>再戦する</small></span></button>
+        <button class="ghost-btn" id="back-lobby">ロビーへ</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay modal-overlay" id="howto" aria-label="遊び方" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <span class="panel-kicker">HOW TO DUEL</span>
+          <h2>3分でわかるルール</h2>
+        </div>
+        <button class="icon-btn small" id="howto-close" aria-label="閉じる">×</button>
+      </div>
+      <ol class="howto-list">
+        <li><b>カードを選ぶ</b><span>手札をタップ。モンスターは召喚、魔法は発動、罠はセット。</span></li>
+        <li><b>モンスターで攻撃</b><span>自分のモンスターをタップ → 相手をタップ。守備表示ならDEFと比較。</span></li>
+        <li><b>LPを0に</b><span>相手LPを4000から0にすれば勝利。山札切れにも注意。</span></li>
+        <li><b>傾けて覗く</b><span>任意で傾き操作をON。スマホを傾けると盤面が立体的に動きます。</span></li>
+      </ol>
+      <button class="dock-btn primary wide" id="howto-ok">わかった</button>
+    </div>
+  </section>
+
+  <section class="overlay modal-overlay" id="code-modal" aria-label="ルームコード" aria-hidden="true">
+    <div class="modal-card compact-card">
+      <div class="modal-head">
+        <div>
+          <span class="panel-kicker">PRIVATE ROOM</span>
+          <h2>ルームコードで対戦</h2>
+        </div>
+        <button class="icon-btn small" id="code-close" aria-label="閉じる">×</button>
+      </div>
+      <p class="modal-copy">友達と共有したコードを入力。空欄なら新規ルームを作成します。</p>
+      <input class="code-input" id="code-input" inputmode="text" autocomplete="off" maxlength="12" placeholder="RM-1234" aria-label="ルームコード">
+      <button class="dock-btn primary wide" id="code-ok">ルームに入る</button>
+    </div>
+  </section>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
