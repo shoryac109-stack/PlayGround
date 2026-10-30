@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#070510">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>遊戯王 ルムマ — ROOM MATCH DUEL</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230b0718' stroke='%23f6cf74' stroke-width='2'/%3E%3Cpath d='M32 10l6 16 17 6-17 6-6 16-6-16-17-6 17-6z' fill='%23f6cf74'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="cosmos" aria-hidden="true"></canvas>
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <section id="titleScreen" class="screen title-screen">
+    <div class="title-topbar">
+      <span class="online-pill"><i></i> ROOM SERVER ONLINE</span>
+      <div class="title-tools">
+        <button id="titleTilt" class="chip-btn" type="button" aria-pressed="false">TILT OFF</button>
+        <button id="titleSound" class="chip-btn" type="button" aria-pressed="true">SOUND ON</button>
+      </div>
+    </div>
+
+    <div class="title-stage">
+      <div class="sigil" aria-hidden="true">
+        <div class="sigil-ring ring-a"></div>
+        <div class="sigil-ring ring-b"></div>
+        <div class="sigil-ring ring-c"></div>
+        <svg class="sigil-mark" viewBox="0 0 240 240" fill="none">
+          <circle cx="120" cy="120" r="88" stroke="url(#sigA)" stroke-width="1.2" stroke-dasharray="3 9"/>
+          <circle cx="120" cy="120" r="70" stroke="url(#sigA)" stroke-width="2" opacity=".7"/>
+          <path d="M120 28 L166 76 L206 120 L166 164 L120 212 L74 164 L34 120 L74 76 Z" stroke="url(#sigA)" stroke-width="1.1" opacity=".55"/>
+          <path d="M120 52 L147 93 L188 120 L147 147 L120 188 L93 147 L52 120 L93 93 Z" fill="url(#sigB)" opacity=".14"/>
+          <path d="M120 76 L133 107 L164 120 L133 133 L120 164 L107 133 L76 120 L107 107 Z" fill="url(#sigB)" opacity=".38"/>
+          <circle cx="120" cy="120" r="13" fill="#070510" stroke="#ffe6a6" stroke-width="2"/>
+          <circle cx="120" cy="120" r="5.5" fill="#ffe6a6"/>
+          <defs>
+            <linearGradient id="sigA" x1="30" y1="30" x2="210" y2="210">
+              <stop stop-color="#f6cf74"/><stop offset=".5" stop-color="#e7a93f"/><stop offset="1" stop-color="#7a5415"/>
+            </linearGradient>
+            <radialGradient id="sigB"><stop stop-color="#ffe6a6"/><stop offset="1" stop-color="#c78a24" stop-opacity="0"/></radialGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div class="logo-lockup">
+        <p class="logo-kicker"><span></span>ROOM MATCH DUEL<span></span></p>
+        <h1 class="logo-jp">遊戯王<span class="logo-gold">ルムマ</span></h1>
+        <p class="logo-en">DUEL&nbsp;&nbsp;ROOM</p>
+        <p class="logo-tag">次元を超えたデュエルが、いま始まる。</p>
+      </div>
+    </div>
+
+    <div class="title-cards" aria-hidden="true">
+      <div class="fan-card fc1"></div>
+      <div class="fan-card fc2"></div>
+      <div class="fan-card fc3"></div>
+      <div class="fan-card fc4"></div>
+      <div class="fan-card fc5"></div>
+    </div>
+
+    <div class="title-bottom">
+      <div class="title-actions">
+        <button id="playBtn" class="play-btn" type="button">
+          <span class="play-glyph" aria-hidden="true"></span>
+          <span class="play-label">PLAY</span>
+          <span class="play-sub">QUICK DUEL</span>
+        </button>
+        <div class="room-card">
+          <div class="room-row"><span>ROOM CODE</span><b id="roomCode">— — — —</b></div>
+          <div class="room-row dim"><span>FORMAT</span><b>SPEED DUEL · 4000 LP</b></div>
+          <div class="room-row dim"><span>RIVAL</span><b>AKIRA · LV.12</b></div>
+        </div>
+      </div>
+      <p class="title-hint">TAP PLAY TO JOIN THE ROOM <span>·</span> TOUCH CONTROLS <span>·</span> OPTIONAL TILT</p>
+    </div>
+  </section>
+
+  <section id="gameScreen" class="screen game-screen is-hidden" aria-label="Duel board">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="exitBtn" class="icon-btn" type="button" aria-label="Leave duel">
+          <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <span class="room-mini">ROOM <b id="roomMini">—</b></span>
+      </div>
+      <div class="turn-pill" id="turnPill">
+        <span class="turn-dot"></span>
+        <span id="turnLabel">YOUR TURN</span>
+        <span class="turn-sep"></span>
+        <span id="turnNum">TURN 1</span>
+      </div>
+      <div class="topbar-right">
+        <button id="gameTilt" class="icon-btn small" type="button" aria-label="Toggle tilt" title="Tilt">
+          <svg viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="13" rx="2.5"/><path d="M8 21h8M12 18v3"/></svg>
+        </button>
+        <button id="gameSound" class="icon-btn small" type="button" aria-label="Toggle sound" title="Sound">
+          <svg viewBox="0 0 24 24"><path d="M5 9v6h3l4 3V6L8 9H5z"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8 8 0 010 12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="duelist opponent" id="aiPanel">
+      <div class="avatar ai-avatar" aria-hidden="true">
+        <span class="avatar-glow"></span>
+        <svg viewBox="0 0 64 64"><path d="M14 51c2-11 9-17 18-17s16 6 18 17" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="23" r="11" fill="none" stroke="currentColor" stroke-width="3"/><path d="M20 20l5-7 7 4 7-4 5 7" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+      </div>
+      <div class="duelist-main">
+        <div class="duelist-top">
+          <span class="duelist-name">AKIRA</span>
+          <span class="duelist-rank">LV.12</span>
+          <span class="hand-count" id="aiHandCount">HAND 5</span>
+        </div>
+        <div class="lp-track" id="aiLpTrack">
+          <div class="lp-fill" id="aiLpFill"></div>
+          <div class="lp-shine"></div>
+          <span class="lp-value" id="aiLp">4000</span>
+          <span class="lp-label">LP</span>
+        </div>
+      </div>
+      <div class="ai-hand" id="aiHand" aria-hidden="true"></div>
+    </div>
+
+    <div class="arena" id="arena">
+      <div class="arena-halo" aria-hidden="true"></div>
+      <div class="battle-feed" id="battleFeed"></div>
+      <div class="board-wrap">
+        <div class="board" id="board">
+          <div class="board-glow" aria-hidden="true"></div>
+          <div class="field-row ai-spell-row" data-side="ai" data-kind="spell"></div>
+          <div class="field-row ai-monster-row" data-side="ai" data-kind="monster"></div>
+          <div class="mid-row">
+            <div class="side-disc deck-disc" id="aiDeckDisc"><span class="disc-label">DECK</span><span class="disc-count" id="aiDeckCount">20</span></div>
+            <div class="side-disc grave-disc" id="aiGraveDisc"><span class="disc-label">GRAVE</span><span class="disc-count" id="aiGraveCount">0</span></div>
+            <div class="field-spell" id="fieldSpell"><span>FIELD</span></div>
+            <div class="side-disc deck-disc" id="playerDeckDisc"><span class="disc-label">DECK</span><span class="disc-count" id="playerDeckCount">20</span></div>
+            <div class="side-disc grave-disc" id="playerGraveDisc"><span class="disc-label">GRAVE</span><span class="disc-count" id="playerGraveCount">0</span></div>
+          </div>
+          <div class="field-row player-monster-row" data-side="player" data-kind="monster"></div>
+          <div class="field-row player-spell-row" data-side="player" data-kind="spell"></div>
+        </div>
+      </div>
+      <div class="ticker" id="ticker" aria-live="polite"></div>
+      <div class="direct-hint" id="directHint">TAP AKIRA'S LIFE POINTS TO ATTACK DIRECTLY</div>
+    </div>
+
+    <div class="duelist player" id="playerPanel">
+      <div class="avatar player-avatar" aria-hidden="true">
+        <span class="avatar-glow"></span>
+        <svg viewBox="0 0 64 64"><path d="M14 51c2-11 9-17 18-17s16 6 18 17" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="23" r="11" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 14l8-6 8 6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+      </div>
+      <div class="duelist-main">
+        <div class="duelist-top">
+          <span class="duelist-name">YOU</span>
+          <span class="duelist-rank" id="playerRank">DUELIST</span>
+          <span class="hand-count" id="playerHandCount">HAND 5</span>
+        </div>
+        <div class="lp-track" id="playerLpTrack">
+          <div class="lp-fill" id="playerLpFill"></div>
+          <div class="lp-shine"></div>
+          <span class="lp-value" id="playerLp">4000</span>
+          <span class="lp-label">LP</span>
+        </div>
+      </div>
+      <div class="phase-stack">
+        <span class="phase-label" id="phaseLabel">MAIN PHASE</span>
+        <span class="phase-sub" id="phaseSub">SELECT A CARD</span>
+      </div>
+    </div>
+
+    <div class="action-row">
+      <div class="hint-pill" id="hintPill">Tap a card to summon, cast, or set it.</div>
+      <div class="action-buttons">
+        <button id="cancelBtn" class="pill-btn ghost is-hidden" type="button">CANCEL</button>
+        <button id="endTurnBtn" class="pill-btn gold" type="button">END TURN</button>
+      </div>
+    </div>
+
+    <div class="hand-wrap">
+      <div class="hand" id="hand" aria-label="Your hand"></div>
+    </div>
+
+    <div class="card-info is-hidden" id="cardInfo">
+      <div class="ci-art" id="ciArt"></div>
+      <div class="ci-body">
+        <div class="ci-meta" id="ciMeta">MONSTER · LIGHT · LV 8</div>
+        <h3 id="ciName">ASTRA DRAGON</h3>
+        <p id="ciText"></p>
+        <div class="ci-stats" id="ciStats"></div>
+      </div>
+    </div>
+
+    <div class="turn-banner" id="turnBanner" aria-live="polite">
+      <span class="tb-line"></span>
+      <div><b id="tbTitle">YOUR TURN</b><small id="tbSub">MAIN PHASE</small></div>
+      <span class="tb-line"></span>
+    </div>
+
+    <div class="fs-overlay is-hidden" id="resultOverlay">
+      <div class="result-panel">
+        <p class="result-kicker" id="resultKicker">DUEL COMPLETE</p>
+        <h2 id="resultTitle">VICTORY</h2>
+        <p class="result-sub" id="resultSub">AKIRA'S LIFE POINTS REACHED ZERO</p>
+        <div class="result-stats">
+          <div><span>TURNS</span><b id="resultTurns">—</b></div>
+          <div><span>DAMAGE DEALT</span><b id="resultDamage">—</b></div>
+          <div><span>MONSTERS SUMMONED</span><b id="resultSummons">—</b></div>
+        </div>
+        <button id="againBtn" class="play-btn compact" type="button"><span class="play-label">DUEL AGAIN</span></button>
+        <button id="backTitleBtn" class="pill-btn ghost" type="button">BACK TO TITLE</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</div>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
